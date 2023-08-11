@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>health status</title>
+</head>
+<body>
+    <h1>health status</h1>
+    <div>
+        <p th:text="'spring env = ' + ${activatedProfile}">invalid</p>
+        <p th:text="'gradle version = ' + ${gradleVersion}">invalid</p>
+        <p th:text="'spring version = ' + ${springVersion}">invalid</p>
+        <p th:text="'custom env = ' + ${customEnv}">invalid</p>
+    </div>
+</body>
+</html>
