@@ -86,3 +86,22 @@ jobs:
       ### deploy ###
 
       ### notify ###
+      - name: Notify slack
+        uses: slackapi/slack-github-action@v1.24.0
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "workflow 이름: ${{ github.workflow }}\njob 이름: ${{ github.job }}\nstatus: ${{ job.status }}\nPR: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
