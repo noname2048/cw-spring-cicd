@@ -3,7 +3,7 @@ name: CD Workflow
 on:
   pull_request:
     branches:
-      - deprecate
+      - main
 
 jobs:
   cd-job:

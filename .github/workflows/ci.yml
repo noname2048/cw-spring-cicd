@@ -3,7 +3,7 @@ name: CI Workflow
 on:
   pull_request:
     branches:
-      - deprecate
+      - depreciated
 
 jobs:
   ci-test:
