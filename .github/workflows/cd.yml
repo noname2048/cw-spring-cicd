@@ -28,18 +28,36 @@ jobs:
         with:
           python-version: 3.11
 
-      - name:  Create application-prod.yml
+      - name: Create application-prod.yml
         env:
-          env: ${{ secrets.ENV }}
-          hello: ${{ secrets.HELLO }}
+          env: ${{ vars.ENV }}
+          hello: ${{ vars.HELLO }}
         run:
           python src/main/resources/create-env.py
+
+      - name: Check about application-prod.yml
+        run: |
+          cat src/main/resources/application-prod.yml
 
       - name: Setup Gradle and build
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.2
           arguments: build
+
+      - name: Check if file exists
+        run: |
+          if [ -f ./build/libs/demo-0.0.1-SNAPSHOT.jar ]; then
+            echo "File exists!"
+          else
+            echo "File does NOT exist!"
+          fi
+
+      - name: Install tree and display directory structure
+        if: failure()
+        run: |
+          sudo apt-get install -y tree
+          tree .
 
       ### Build & Push Docker ###
       - name: Configure AWS credentials
@@ -78,7 +96,6 @@ jobs:
             {
               "blocks": [
                 {
-                  "text": "what test need",
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
