@@ -77,7 +77,7 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+          docker build -f Dockerfile -t ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }} . 
 
       - name: Push image
         run: |
