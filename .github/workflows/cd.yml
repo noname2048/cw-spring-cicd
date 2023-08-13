@@ -3,7 +3,7 @@ name: CD Workflow
 on:
   pull_request:
     branches:
-      - main
+      - deprecate
 
 jobs:
   cd-job:
@@ -54,7 +54,6 @@ jobs:
           fi
 
       - name: Install tree and display directory structure
-        if: failure()
         run: |
           sudo apt-get install -y tree
           tree .
