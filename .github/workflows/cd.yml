@@ -30,9 +30,9 @@ jobs:
 
       - name: Create application-prod.yml
         env:
-          env: ${{ vars.ENV }}
-          hello: ${{ vars.HELLO }}
-          debug: false
+          ENV: ${{ vars.ENV }}
+          HELLO: ${{ vars.HELLO }}
+          DEBUG: false
         run:
           python src/main/resources/create-env.py
 
@@ -76,10 +76,12 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build image
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+        run: |
+          docker build -t ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+
+      - name: Push image
+        run: |
+          docker push ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
 
       ### deploy ###
 
