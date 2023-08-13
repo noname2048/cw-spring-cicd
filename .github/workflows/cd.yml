@@ -33,7 +33,7 @@ jobs:
           env: ${{ secrets.ENV }}
           hello: ${{ secrets.HELLO }}
         run:
-          python src/main/resources create-env.py
+          python src/main/resources/create-env.py
 
       - name: Setup Gradle and build
         uses: gradle/gradle-build-action@v2
