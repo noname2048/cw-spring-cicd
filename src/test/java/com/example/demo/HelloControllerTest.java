@@ -6,7 +6,6 @@ class HelloControllerTest {
 
     @Test
     void root() {
-        assert(true);
     }
 
     @Test

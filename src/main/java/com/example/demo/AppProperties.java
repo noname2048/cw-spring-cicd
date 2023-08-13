@@ -6,10 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "custom")
+@ConfigurationProperties(prefix = "app")
 @Setter
 @Getter
-public class CustomProperties {
+public class AppProperties {
+
+    private String env;
 
     private String hello;
 

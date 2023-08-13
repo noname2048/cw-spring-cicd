@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,17 +9,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HelloController {
 
-    @Value("${spring.profiles.active}")
-    private String activatedProfile;
+    private final AppProperties appProperties;
 
-    private final CustomProperties customProperties;
-
-    private final AppInfo appinfo;
+    private final VersionProperties versionProperties;
 
     @Autowired
-    public HelloController(CustomProperties customProperties, AppInfo appinfo) {
-        this.customProperties = customProperties;
-        this.appinfo = appinfo;
+    public HelloController(AppProperties appProperties,
+                           VersionProperties versionProperties) {
+        this.appProperties = appProperties;
+        this.versionProperties = versionProperties;
     }
 
     @GetMapping("/")
@@ -31,10 +28,11 @@ public class HelloController {
 
     @GetMapping("/health")
     public String health(Model model) {
-        model.addAttribute("activatedProfile", this.activatedProfile);
-        model.addAttribute("springVersion", appinfo.getSpringVersion());
-        model.addAttribute("gradleVersion", appinfo.getGradleVersion());
-        model.addAttribute("customEnv", customProperties.getHello());
+        model.addAttribute("env", this.appProperties.getEnv());
+        model.addAttribute("springVersion", versionProperties.getSpringVersion());
+        model.addAttribute("springBootVersion", versionProperties.getSpringVersion());
+        model.addAttribute("gradleVersion", versionProperties.getGradleVersion());
+        model.addAttribute("customEnv", appProperties.getHello());
         return "health";
     }
 }

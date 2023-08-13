@@ -1,0 +1,109 @@
+name: CD Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  cd-job:
+    runs-on: ubuntu-20.04
+    environment:
+      name: prod
+
+    steps:
+      ### build Jar ###
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+          check-latest: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name:  Create application-prod.yml
+        env:
+          env: ${{ secrets.ENV }}
+          hello: ${{ secrets.HELLO }}
+        run:
+          python src/main/resources create-env.py
+
+      - name: Setup Gradle and build
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.2
+          arguments: build
+          gradle-home-cache-cleanup: true
+
+      ### Build & Push Docker ###
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to AWS ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          load: true
+          tags: ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      ### deploy ###
+
+      ### notify ###
+      - name: Notify on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "deploy failure"
+                  }
+                }
+              ]
+            }
+
+      - name: Notify on success
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "deploy success"
+                  }
+                }
+              ]
+            }
+      
