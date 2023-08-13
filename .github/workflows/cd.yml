@@ -32,6 +32,7 @@ jobs:
         env:
           env: ${{ vars.ENV }}
           hello: ${{ vars.HELLO }}
+          debug: false
         run:
           python src/main/resources/create-env.py
 
@@ -79,46 +80,7 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       ### deploy ###
 
       ### notify ###
-      - name: Notify on failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1.24.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "deploy failure"
-                  }
-                }
-              ]
-            }
-
-      - name: Notify on success
-        uses: slackapi/slack-github-action@v1.24.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "deploy success"
-                  }
-                }
-              ]
-            }
-      
