@@ -51,7 +51,7 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }} .
+          docker push ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
 
       ### deploy ###
       - name: Download task definition
