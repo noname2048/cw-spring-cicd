@@ -46,8 +46,10 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build image
+        id: build-image
         run: |
           docker build -f Dockerfile -t ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }} . 
+          echo 'image=${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}' >> $GITHUB_OUTPUT
 
       - name: Push image
         run: |
@@ -91,7 +93,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "workflow 이름: ${{ github.workflow }}\njob 이름: ${{ github.job }}\nstatus: ${{ job.status }}\nPR: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                    "text": "workflow 이름: ${{ github.workflow }}\njob 이름: ${{ github.job }}\nstatus: ${{ job.status }}\nPR: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}\nIMAGE: ${{ steps.build_image.output.image }}"
                   }
                 }
               ]
