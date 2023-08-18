@@ -12,7 +12,7 @@ jobs:
       name: prod
 
     steps:
-      ### build Jar ###
+      ### build Jar Application ###
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -23,41 +23,11 @@ jobs:
           java-version: 17
           check-latest: true
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-
-      - name: Create application-prod.yml
-        env:
-          ENV: ${{ vars.ENV }}
-          HELLO: ${{ vars.HELLO }}
-          DEBUG: false
-        run:
-          python src/main/resources/create-env.py
-
-      - name: Check about application-prod.yml
-        run: |
-          cat src/main/resources/application-prod.yml
-
       - name: Setup Gradle and build
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.2
           arguments: build
-
-      - name: Check if file exists
-        run: |
-          if [ -f ./build/libs/demo-0.0.1-SNAPSHOT.jar ]; then
-            echo "File exists!"
-          else
-            echo "File does NOT exist!"
-          fi
-
-      - name: Install tree and display directory structure
-        run: |
-          sudo apt-get install -y tree
-          tree .
 
       ### Build & Push Docker ###
       - name: Configure AWS credentials
@@ -81,9 +51,30 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+          docker push ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }} .
 
       ### deploy ###
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition SpringTaskDefinitionFamily \
+            --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: spring
+          image: ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: SpringS
+          cluster: DevCluster
+          wait-for-service-stability: true
 
       ### notify ###
       - name: Notify slack

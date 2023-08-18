@@ -35,6 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### production Env ###
-**/resources/application-prod.yml

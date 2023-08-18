@@ -1,0 +1,5 @@
+app:
+  env: ${env:dev}
+  hello: ${hello:hello-from-dev}
+server:
+  port: ${port:80}
