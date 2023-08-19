@@ -6,13 +6,13 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("classpath:version-info.yml")
+@PropertySource("classpath:version.yml")
 @Getter
-public class AppInfo {
+public class VersionProperties {
 
-    @Value("${app.gradle-version}")
+    @Value("${version.gradle-version}")
     private String gradleVersion;
 
-    @Value("${app.springVersion}")
+    @Value("${version.springVersion}")
     private String springVersion;
 }
