@@ -10,13 +10,13 @@ import java.util.Optional;
 @Service
 public class BottleService {
 
-    private final BottleRepository bottleRepository;
+//    private final BottleRepository bottleRepository;
 
-    public BottleService(BottleRepository bottleRepository) {
-        this.bottleRepository = bottleRepository;
-    }
+//    public BottleService(BottleRepository bottleRepository) {
+//        this.bottleRepository = bottleRepository;
+//    }
 
-    public Optional<Bottle> create() {
-        return Optional.empty();
-    }
+//    public Optional<Bottle> create() {
+//        return Optional.empty();
+//    }
 }
