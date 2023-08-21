@@ -27,6 +27,10 @@
 
 Spring 을 처음 접하다 보니, CI/CD 만 완성하여 제출합니다.
 
+- 서비스 주소:
+  - [FirstLoadBalancer-2059202413.ap-northeast-2.elb.amazonaws.com](FirstLoadBalancer-2059202413.ap-northeast-2.elb.amazonaws.com)
+  - [http://spring.papperbottle.com/health](http://spring.papperbottle.com/health)
+
 - 아키텍처 구조도
 - Storage 구조도
 - ERD
@@ -43,6 +47,9 @@ Spring 을 처음 접하다 보니, CI/CD 만 완성하여 제출합니다.
 
 ### ERD
 ![img.png](docs/ERD.png)
+
+### 가상 API
+![img.png](docs/api.png)
 
 ### 회고
 

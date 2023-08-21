@@ -2,13 +2,13 @@ app:
   env: local
   hello: hello-from-local
 
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
-  jpa:
-    database: postgresql
-    show-sql: false
-    hibernate:
-      ddl-auto: update
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: postgres
+#  jpa:
+#    database: postgresql
+#    show-sql: false
+#    hibernate:
+#      ddl-auto: update
