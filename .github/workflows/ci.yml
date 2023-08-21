@@ -8,6 +8,15 @@ on:
 jobs:
   ci-test:
     runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout
