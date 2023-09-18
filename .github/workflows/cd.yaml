@@ -68,6 +68,10 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > kubeconfig
           export KUBECONFIG=kubeconfig
 
+      - name: Validate context
+        run: |
+          kubectl config current-context
+
       - name: Deploy to kubernetes
         run: |
           kubectl rollout restart deployment/cw-deployment -n cw
