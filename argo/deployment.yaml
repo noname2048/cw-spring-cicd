@@ -21,9 +21,5 @@ spec:
           image: ghcr.io/noname2048/cw:latest
           ports:
             - containerPort: 80
-          resources:
-            limits:
-              cpu: 100m
-              memory: 128Mi
       imagePullSecrets:
         - name: ghcr-secret
