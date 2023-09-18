@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - production
+      - check-cd-work
 
 jobs:
   main-job:
@@ -42,12 +43,10 @@ jobs:
 
       - name: Build Docker
         uses: docker/build-push-action@v5
-        id: build-docker
         with:
+          build: true
           push: true
-          tags: ghcr.io/noname2048/cw
-          cache-from: type=gha
-          cache-to: type=gha
+          tags: ghcr.io/noname2048/cw:latest
 
       ### Rolling Update ###
       - name: Install Kubectl
