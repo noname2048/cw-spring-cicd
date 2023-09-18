@@ -1,0 +1,37 @@
+name: CI Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci-test:
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+          check-latest: true
+
+      - name: Setup Gradle and test
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.2
+          arguments: test
+          gradle-home-cache-cleanup: true

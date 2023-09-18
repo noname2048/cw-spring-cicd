@@ -7,8 +7,9 @@
 <body>
     <h1>health status</h1>
     <div>
-        <p th:text="'spring env = ' + ${activatedProfile}">invalid</p>
+        <p th:text="'spring env = ' + ${env}">invalid</p>
         <p th:text="'gradle version = ' + ${gradleVersion}">invalid</p>
+        <p th:text="'gradle version = ' + ${springBootVersion}">invalid</p>
         <p th:text="'spring version = ' + ${springVersion}">invalid</p>
         <p th:text="'custom env = ' + ${customEnv}">invalid</p>
     </div>

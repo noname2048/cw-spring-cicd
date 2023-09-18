@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cw-deployment
+  namespace: cw
+  labels:
+    environment: production
+    app: cw-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cw-app
+  template:
+    metadata:
+      labels:
+        app: cw-app
+    spec:
+      containers:
+        - name: cw-container
+          image: ghcr.io/noname2048/cw:latest
+          ports:
+            - containerPort: 80
+          args:
+            - "java"
+            - "-jar"
+            - "app.jar"
+            - "--server.port=80"
+            - "--spring.profiles.active=prod"
+          env:
+            - name: "hello"
+              value: "hello-from-vultr"
+            - name: "env"
+              value: "vke"
+      imagePullSecrets:
+        - name: ghcr-secret

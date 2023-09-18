@@ -1,0 +1,101 @@
+name: CD Workflow
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  cd-job:
+    runs-on: ubuntu-20.04
+    environment:
+      name: prod
+
+    steps:
+      ### build Jar Application ###
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+          check-latest: true
+
+      - name: Setup Gradle and build
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.2
+          arguments: build
+
+      ### Build & Push Docker ###
+      # REF: https://cobain.me/2020/04/29/ECS-CodePipeline-CICD.html
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to AWS ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build image
+        id: build-image
+        run: |
+          docker build -f Dockerfile -t ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }} . 
+          echo 'image=${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}' >> $GITHUB_OUTPUT
+
+      - name: Push image
+        run: |
+          docker push ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+
+      ### deploy ###
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition SpringTaskDefinitionFamily \
+            --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: spring
+          image: ${{ secrets.ECR_REGISTRY_URL }}:${{ github.sha }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: SpringS
+          cluster: DevCluster
+          wait-for-service-stability: true
+
+      ### notify ###
+      - name: Notify slack
+        uses: slackapi/slack-github-action@v1.24.0
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "workflow 이름: ${{ github.workflow }}\njob 이름: ${{ github.job }}\nstatus: ${{ job.status }}\nPR: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}\nIMAGE: ${{ steps.build_image.output.image }}"
+                  }
+                }
+              ]
+            }
