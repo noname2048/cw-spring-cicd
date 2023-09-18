@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cw-deployment
+  namespace: cw
+  labels:
+    environment: production
+    app: cw-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cw-app
+  template:
+    metadata:
+      labels:
+        app: cw-app
+    spec:
+      containers:
+        - name: cw-container
+          image: ghcr.io/noname2048/cw:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      imagePullSecrets:
+        - name: ghcr-secret
