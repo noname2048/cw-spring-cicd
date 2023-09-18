@@ -64,9 +64,10 @@ jobs:
         uses: azure/setup-kubectl@v3
 
       - name: Set kubeconfig (context)
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig
-          export KUBECONFIG=kubeconfig
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
 
       - name: Validate context
         run: |
