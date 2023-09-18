@@ -34,6 +34,11 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
+      - name: Show tree
+        run:
+          sudo apt install tree
+          sudo tree .
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -44,7 +49,6 @@ jobs:
       - name: Build Docker
         uses: docker/build-push-action@v5
         with:
-          build: true
           push: true
           tags: ghcr.io/noname2048/cw:latest
 
