@@ -48,16 +48,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PAT }}
 
-      # - name: Build Docker
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     push: true
-      #     tags: ghcr.io/noname2048/cw:latest
-
       - name: Build Docker
-        run: |
-          docker build -f Dockerfile -t ghcr.io/noname2048/cw:latest .
-          docker push ghcr.io/noname2048/cw:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/noname2048/cw:latest
+
+      # - name: Build Docker
+      #   run: |
+      #     docker build -f Dockerfile -t ghcr.io/noname2048/cw:latest .
+      #     docker push ghcr.io/noname2048/cw:latest
 
       ### Rolling Update ###
       - name: Install Kubectl
