@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - production
-      - check-cd-work
 
 jobs:
   main-job:
@@ -54,11 +53,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/noname2048/cw:latest
-
-      # - name: Build Docker
-      #   run: |
-      #     docker build -f Dockerfile -t ghcr.io/noname2048/cw:latest .
-      #     docker push ghcr.io/noname2048/cw:latest
 
       ### Rolling Update ###
       - name: Install Kubectl
