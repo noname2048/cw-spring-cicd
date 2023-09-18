@@ -36,8 +36,8 @@ jobs:
 
       - name: Show tree
         run:
-          sudo apt install tree
-          sudo tree .
+          sudo apt-get install -y tree
+          tree
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
